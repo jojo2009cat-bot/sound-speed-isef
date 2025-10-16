@@ -2,7 +2,7 @@ import streamlit as st
 import math
 
 # --- Page config ---
-st.set_page_config(page_title="ISEF Chemical System", page_icon="🔬", layout="centered")
+st.set_page_config(page_title="ISEF Polluter Calculator", page_icon="🌍", layout="centered")
 
 # --- Custom background and styling ---
 page_bg = """
@@ -69,10 +69,11 @@ h1 {
 st.markdown(page_bg, unsafe_allow_html=True)
 
 # --- Title ---
-st.title("🔬 ISEF Chemical System Calculator")
+st.title("🌍 ISEF Polluter Calculator")
 
 st.markdown(
-    "Use this calculator to find the **number of moles (n)** and **total mass** from a given speed value."
+    "Use this calculator to determine the **number of moles (n)** and the **total mass** of heavy metals "
+    "based on the calculated speed in your experiment."
 )
 
 # --- Element selection ---
@@ -106,3 +107,4 @@ if st.button("Calculate"):
             st.markdown(f"<div class='result-box'>Total mass: {total_mass:.4f} g</div>", unsafe_allow_html=True)
     except Exception as e:
         st.error(f"⚠️ Calculation error: {e}")
+
