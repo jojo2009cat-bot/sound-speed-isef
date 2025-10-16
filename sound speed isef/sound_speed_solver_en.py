@@ -103,3 +103,4 @@ Developed with ❤️ using <b>SymPy</b> + <b>Streamlit</b> <br>
 © 2025 ISEF Project
 </p>
 """, unsafe_allow_html=True)
+
