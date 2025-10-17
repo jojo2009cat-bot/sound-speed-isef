@@ -74,9 +74,7 @@ st.title("Aguamenti Polluter Calculator")
 # === Description ===
 st.markdown("""
 Welcome to the **Aguamenti Polluter Calculator** —  
-a specialized system designed to **analyze pollutant behavior** in water  
-by calculating the **molar quantity and total mass** based on the measured sound speed.  
-Perfect for **ISEF research projects** focused on heavy metals and environmental pollution.
+a specialized system designed to calculate the **number of moles (n) and total mass** of the heavy metal based on the measured sound speed in your experiment.  
 """)
 
 # === Element selection ===
@@ -113,4 +111,5 @@ if st.button("Calculate"):
             st.info(f"💡 Total mass: **{total_mass:.4f} g**")
     except ZeroDivisionError:
         st.error("Speed cannot be zero.")
+
 
