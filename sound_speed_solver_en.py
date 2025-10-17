@@ -2,9 +2,9 @@ import streamlit as st
 import math
 
 # --- Page config ---
-st.set_page_config(page_title="Aguamenti Polluter Calculator", page_icon="💧", layout="centered")
+st.set_page_config(page_title="Aguamenti Polluter Calculator", page_icon="🌊", layout="centered")
 
-# --- Animated Background CSS ---
+# --- Custom animated background and style ---
 page_bg = """
 <style>
 body {
@@ -14,35 +14,44 @@ body {
     overflow-x: hidden;
 }
 
-/* Animated gradient background */
+/* Background gradient animation */
 [data-testid="stAppViewContainer"] {
-    background: linear-gradient(-45deg, #0b132b, #1c2541, #0b132b, #3a506b);
+    background: linear-gradient(135deg, #0b132b, #1c2541, #c5a300, #0b132b);
     background-size: 400% 400%;
-    animation: gradientMove 12s ease infinite;
+    animation: bgmove 12s ease infinite;
 }
 
-@keyframes gradientMove {
+@keyframes bgmove {
     0% {background-position: 0% 50%;}
     50% {background-position: 100% 50%;}
     100% {background-position: 0% 50%;}
 }
 
-/* Title */
+/* Main Title */
 h1 {
-    color: #c5a300;
     text-align: center;
-    font-weight: 900;
-    text-shadow: 0 0 10px #c5a300;
+    font-size: 50px !important;
+    font-weight: 900 !important;
+    background: linear-gradient(90deg, #c5a300, #e0c94d, #c5a300);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0px 0px 10px rgba(197, 163, 0, 0.4);
+    letter-spacing: 1.5px;
 }
 
-/* Labels */
+/* Description text */
+.stMarkdown {
+    text-align: center;
+    font-size: 17px;
+    color: #f1f1f1;
+}
+
+/* Inputs and labels */
 .stSelectbox label, .stNumberInput label {
     color: #e0e1dd !important;
     font-size: 18px;
     font-weight: 600;
 }
-
-/* Input boxes */
 .stNumberInput input {
     background-color: rgba(255,255,255,0.1) !important;
     color: white !important;
@@ -79,33 +88,17 @@ h1 {
     margin-top: 10px;
     box-shadow: 0 0 10px rgba(197,163,0,0.6);
 }
-
-/* Animated wave effect at bottom */
-.wave {
-    position: fixed;
-    bottom: 0;
-    left: 0;
-    width: 200%;
-    height: 120px;
-    background: radial-gradient(circle, #c5a30033 20%, transparent 70%);
-    animation: waveMove 6s linear infinite;
-    opacity: 0.4;
-}
-@keyframes waveMove {
-    0% { transform: translateX(0); }
-    100% { transform: translateX(-50%); }
-}
 </style>
-<div class="wave"></div>
 """
 st.markdown(page_bg, unsafe_allow_html=True)
 
 # --- Title ---
-st.title("💧 Aguamenti Polluter Calculator")
+st.title("Aguamenti Polluter Calculator")
 
+# --- Description (from the ISEF version) ---
 st.markdown(
-    "Use this scientific calculator to determine the **number of moles (n)** "
-    "and **total mass** of heavy metal pollutants based on the measured speed."
+    "Use this calculator to find the **number of moles (n)** and **total mass** "
+    "of heavy metal pollutants based on the calculated speed in your experiment."
 )
 
 # --- Element selection ---
@@ -139,4 +132,3 @@ if st.button("Calculate"):
             st.markdown(f"<div class='result-box'>Total mass: {total_mass:.4f} g</div>", unsafe_allow_html=True)
     except Exception as e:
         st.error(f"⚠️ Calculation error: {e}")
-
