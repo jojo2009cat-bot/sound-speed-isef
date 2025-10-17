@@ -26,7 +26,7 @@ h1 {
 }
 
 div[data-testid="stAppViewContainer"] {
-    background-color: #001F3F; /* Keep background dark blue */
+    background-color: #001F3F;
     border-radius: 20px;
     padding: 25px;
 }
@@ -49,7 +49,23 @@ div[data-testid="stMarkdownContainer"] {
     background-color: #FFD700;
     color: #001F3F;
 }
+
+/* Wave icon styling */
+.wave-icon {
+    display: block;
+    margin: auto;
+    width: 120px;
+    height: 80px;
+    fill: #FFD700;
+}
 </style>
+""", unsafe_allow_html=True)
+
+# === Wave Icon (SVG) ===
+st.markdown("""
+<svg class="wave-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
+<path d="M2 40c5-8 10-8 15 0s10 8 15 0 10-8 15 0 10 8 15 0" stroke="#FFD700" stroke-width="3" fill="none" />
+</svg>
 """, unsafe_allow_html=True)
 
 # === App Title ===
@@ -57,9 +73,10 @@ st.title("Aguamenti Polluter Calculator")
 
 # === Description ===
 st.markdown("""
-Welcome to the **Aguamenti Polluter Calculator** 🌊  
-This tool helps you estimate pollutant molar quantity and total mass  
-based on the measured sound speed in a solution.
+Welcome to the **Aguamenti Polluter Calculator** —  
+a specialized system designed to **analyze pollutant behavior** in water  
+by calculating the **molar quantity and total mass** based on the measured sound speed.  
+Perfect for **ISEF research projects** focused on heavy metals and environmental pollution.
 """)
 
 # === Element selection ===
@@ -85,7 +102,6 @@ if st.button("Calculate"):
     density_water = 1000  # kg/m³
 
     try:
-        # Derived formula for n
         numerator = (bulk_modulus / (speed ** 2)) * (1 / density_water) - 1
         n = numerator / (molar_mass * (1 / density_water))
 
@@ -97,4 +113,3 @@ if st.button("Calculate"):
             st.info(f"💡 Total mass: **{total_mass:.4f} g**")
     except ZeroDivisionError:
         st.error("Speed cannot be zero.")
-
