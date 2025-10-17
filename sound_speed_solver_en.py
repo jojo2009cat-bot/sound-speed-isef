@@ -1,4 +1,4 @@
-   import streamlit as st
+import streamlit as st
 import math
 
 # === Page configuration ===
@@ -74,4 +74,27 @@ molar_masses = {
     "Mercury (Hg)": 200.59,
     "Lead (Pb)": 207.2
 }
-molar_ma_
+molar_mass = molar_masses[element]
+
+# === Input field for speed ===
+speed = st.number_input("Enter the calculated speed (m/s):", min_value=0.0, step=0.1)
+
+# === Calculation button ===
+if st.button("Calculate"):
+    bulk_modulus = 2.2e9
+    density_water = 1000  # kg/m³
+
+    try:
+        # Derived formula for n
+        numerator = (bulk_modulus / (speed ** 2)) * (1 / density_water) - 1
+        n = numerator / (molar_mass * (1 / density_water))
+
+        if n < 0 or math.isnan(n):
+            st.error("❌ Invalid result: The calculated number of moles is negative or undefined. Please check your inputs.")
+        else:
+            total_mass = n * molar_mass
+            st.success(f"✅ Number of moles (n): **{n:.4f} mol**")
+            st.info(f"💡 Total mass: **{total_mass:.4f} g**")
+    except ZeroDivisionError:
+        st.error("Speed cannot be zero.")
+
