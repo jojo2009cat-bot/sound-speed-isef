@@ -9,16 +9,16 @@ st.set_page_config(
     layout="centered"
 )
 
-# CSS لتصميم الخلفية الأزرق الغامق فقط
+# CSS لتصميم الخلفية الأزرق الغامق الفاتح قليلاً
 st.markdown(
     """
     <style>
         body {
-            background-color: #0a1a3d;
+            background-color: #102b6d; /* درجة أفتح من الأزرق الغامق */
             color: white;
         }
         .main {
-            background-color: #0a1a3d;
+            background-color: #102b6d;
             padding: 40px;
         }
         h1 {
