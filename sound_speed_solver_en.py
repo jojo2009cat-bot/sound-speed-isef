@@ -1,14 +1,33 @@
 import streamlit as st
 import math
+from PIL import Image
+import base64
+from io import BytesIO
 
-# === Page configuration ===
-st.set_page_config(page_title="Aguamenti Polluter Calculator", layout="centered")
+# === إعداد صفحة التطبيق مع أيقونة الموجة في التاب ===
+# سننشئ أيقونة موجة ذهبية صغيرة باستخدام SVG ونحولها لصورة PNG
+import io
+import cairosvg
 
-# === Custom CSS for style ===
+wave_svg = """
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+<path d="M2 40c5-8 10-8 15 0s10 8 15 0 10-8 15 0 10 8 15 0" stroke="#FFD700" stroke-width="4" fill="none"/>
+</svg>
+"""
+png_bytes = cairosvg.svg2png(bytestring=wave_svg.encode('utf-8'))
+wave_icon = Image.open(io.BytesIO(png_bytes))
+
+st.set_page_config(
+    page_title="Aguamenti Polluter Calculator",
+    page_icon=wave_icon,
+    layout="centered"
+)
+
+# === Custom CSS for elegant design ===
 st.markdown("""
 <style>
 body {
-    background-color: #001F3F; /* Dark blue background */
+    background-color: #001F3F; /* Dark blue */
     color: #F5F5F5;
     border: 6px solid #DAA520; /* Gold border */
     border-radius: 20px;
@@ -49,34 +68,17 @@ div[data-testid="stMarkdownContainer"] {
     background-color: #FFD700;
     color: #001F3F;
 }
-
-/* Wave icon styling */
-.wave-icon {
-    display: block;
-    margin: auto;
-    width: 120px;
-    height: 80px;
-    fill: #FFD700;
-}
 </style>
-""", unsafe_allow_html=True)
-
-# === Wave Icon (SVG) ===
-st.markdown("""
-<svg class="wave-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-<path d="M2 40c5-8 10-8 15 0s10 8 15 0 10-8 15 0 10 8 15 0" stroke="#FFD700" stroke-width="3" fill="none" />
-</svg>
 """, unsafe_allow_html=True)
 
 # === App Title ===
 st.title("Aguamenti Polluter Calculator")
 
-# === Description ===
+# === Description (new version) ===
 st.markdown("""
-Welcome to the **Aguamenti Polluter Calculator** —  
-a specialized system designed to **analyze pollutant behavior** in water  
-by calculating the **molar quantity and total mass** based on the measured sound speed.  
-Perfect for **ISEF research projects** focused on heavy metals and environmental pollution.
+Welcome to **Aguamenti Polluter Calculator**.  
+Use this calculator to determine the **number of moles (n)** and the **total mass**  
+of the heavy metal you choose, using the **calculated sound speed** in your experiment.
 """)
 
 # === Element selection ===
