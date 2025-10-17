@@ -9,7 +9,7 @@ st.set_page_config(
     layout="centered"
 )
 
-# CSS لتصميم الخلفية الزرقاء الغامقة بحواف ذهبية والعنوان الذهبي
+# CSS لتصميم الخلفية الأزرق الغامق فقط
 st.markdown(
     """
     <style>
@@ -18,11 +18,8 @@ st.markdown(
             color: white;
         }
         .main {
-            border: 4px solid gold;
-            border-radius: 20px;
-            padding: 40px;
             background-color: #0a1a3d;
-            box-shadow: 0px 0px 25px rgba(255, 215, 0, 0.4);
+            padding: 40px;
         }
         h1 {
             color: gold;
@@ -68,4 +65,3 @@ if st.button("Calculate"):
 
     except Exception as e:
         st.error(f"Error in calculation: {e}")
-
