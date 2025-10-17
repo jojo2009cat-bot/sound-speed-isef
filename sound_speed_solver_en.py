@@ -115,3 +115,4 @@ if st.button("Calculate"):
             st.info(f"💡 Total mass: **{total_mass:.4f} g**")
     except ZeroDivisionError:
         st.error("Speed cannot be zero.")
+
