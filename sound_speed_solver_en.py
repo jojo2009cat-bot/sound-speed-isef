@@ -1,115 +1,110 @@
 import streamlit as st
 import math
 
-# === Page configuration ===
-st.set_page_config(page_title="Aguamenti Polluter Calculator", layout="centered")
+# --- Page config ---
+st.set_page_config(page_title="Aguamenti Polluter Calculator", page_icon="🌍", layout="centered")
 
-# === Custom CSS for style ===
-st.markdown("""
+# --- Custom background and styling ---
+page_bg = """
 <style>
 body {
-    background-color: #001F3F; /* Dark blue background */
-    color: #F5F5F5;
-    border: 6px solid #DAA520; /* Gold border */
-    border-radius: 20px;
-    padding: 20px;
+    background: linear-gradient(135deg, #0b132b 40%, #1c2541 80%);
+    color: #e0e1dd;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+[data-testid="stAppViewContainer"] {
+    background-image: radial-gradient(circle at 10% 20%, #0b132b, #1c2541, #0b132b);
+    background-attachment: fixed;
 }
 
 h1 {
-    color: #FFD700;
-    font-family: 'Trebuchet MS', sans-serif;
+    color: #c5a300;
     text-align: center;
-    font-size: 46px;
-    letter-spacing: 2px;
-    text-shadow: 0px 0px 15px #FFD700;
-    margin-bottom: 10px;
+    font-weight: 900;
+    text-shadow: 1px 1px 4px #888;
 }
 
-div[data-testid="stAppViewContainer"] {
-    background-color: #001F3F;
-    border-radius: 20px;
-    padding: 25px;
-}
-
-div[data-testid="stMarkdownContainer"] {
+.stSelectbox label, .stNumberInput label {
+    color: #e0e1dd !important;
     font-size: 18px;
-    color: #E0E0E0;
-    text-align: center;
+    font-weight: 600;
+}
+
+.stNumberInput input {
+    background-color: #1c2541 !important;
+    color: white !important;
+    border: 1px solid #c5a300 !important;
+    border-radius: 8px;
 }
 
 .stButton>button {
-    background-color: #DAA520;
-    color: black;
-    border-radius: 12px;
+    background-color: #c5a300 !important;
+    color: black !important;
+    border: none;
     font-size: 18px;
     font-weight: bold;
+    border-radius: 10px;
+    padding: 0.6em 1.2em;
     transition: 0.3s;
 }
+
 .stButton>button:hover {
-    background-color: #FFD700;
-    color: #001F3F;
+    background-color: #e0c94d !important;
+    transform: scale(1.05);
 }
 
-/* Wave icon styling */
-.wave-icon {
-    display: block;
-    margin: auto;
-    width: 120px;
-    height: 80px;
-    fill: #FFD700;
+.result-box {
+    background-color: rgba(197, 163, 0, 0.9);
+    color: #000;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
 }
 </style>
-""", unsafe_allow_html=True)
+"""
+st.markdown(page_bg, unsafe_allow_html=True)
 
-# === Wave Icon (SVG) ===
-st.markdown("""
-<svg class="wave-icon" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
-<path d="M2 40c5-8 10-8 15 0s10 8 15 0 10-8 15 0 10 8 15 0" stroke="#FFD700" stroke-width="3" fill="none" />
-</svg>
-""", unsafe_allow_html=True)
-
-# === App Title ===
+# --- Title ---
 st.title("Aguamenti Polluter Calculator")
 
-# === Description ===
-st.markdown("""
-Welcome to the **Aguamenti Polluter Calculator** —  
-a specialized system designed to calculate the **number of moles (n) and total mass** of the heavy metal based on the measured sound speed in your experiment.  
-""")
+st.markdown(
+    "Use this calculator to determine the **number of moles (n)** and the **total mass** of heavy metals "
+    "based on the calculated speed in your experiment."
+)
 
-# === Element selection ===
+# --- Element selection ---
 element = st.selectbox(
     "Select the element:",
     ["Cadmium (Cd)", "Mercury (Hg)", "Lead (Pb)"]
 )
 
-# Assign molar masses
+# --- User input ---
+result = st.number_input("Enter the calculated speed:", min_value=0.0, format="%.4f")
+
+# --- Constants ---
+B = 2.2 * 10**9  # Bulk modulus (Pa)
+density = 1 / (10**3)  # density factor (kg/m³)
 molar_masses = {
     "Cadmium (Cd)": 112.4,
     "Mercury (Hg)": 200.59,
     "Lead (Pb)": 207.2
 }
-molar_mass = molar_masses[element]
 
-# === Input field for speed ===
-speed = st.number_input("Enter the calculated speed (m/s):", min_value=0.0, step=0.1)
-
-# === Calculation button ===
+# --- Calculation ---
 if st.button("Calculate"):
-    bulk_modulus = 2.2e9
-    density_water = 1000  # kg/m³
-
+    M = molar_masses[element]
     try:
-        numerator = (bulk_modulus / (speed ** 2)) * (1 / density_water) - 1
-        n = numerator / (molar_mass * (1 / density_water))
-
-        if n < 0 or math.isnan(n):
-            st.error("❌ Invalid result: The calculated number of moles is negative or undefined. Please check your inputs.")
+        n = ((math.sqrt(B * density) / result) - 1) / (M * (1 / 10**3))
+        if n < 0:
+            st.error("❌ Invalid result: the number of moles cannot be negative.")
         else:
-            total_mass = n * molar_mass
-            st.success(f"✅ Number of moles (n): **{n:.4f} mol**")
-            st.info(f"💡 Total mass: **{total_mass:.4f} g**")
-    except ZeroDivisionError:
-        st.error("Speed cannot be zero.")
-
+            total_mass = n * M
+            st.markdown(f"<div class='result-box'>Number of moles (n): {n:.4f}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='result-box'>Total mass: {total_mass:.4f} g</div>", unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"⚠️ Calculation error: {e}")
 
