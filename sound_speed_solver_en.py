@@ -1,118 +1,142 @@
 import streamlit as st
 import math
-from PIL import Image
-import base64
-from io import BytesIO
 
-# === إعداد صفحة التطبيق مع أيقونة الموجة في التاب ===
-# سننشئ أيقونة موجة ذهبية صغيرة باستخدام SVG ونحولها لصورة PNG
-import io
-import cairosvg
+# --- Page config ---
+st.set_page_config(page_title="Aguamenti Polluter Calculator", page_icon="💧", layout="centered")
 
-wave_svg = """
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
-<path d="M2 40c5-8 10-8 15 0s10 8 15 0 10-8 15 0 10 8 15 0" stroke="#FFD700" stroke-width="4" fill="none"/>
-</svg>
-"""
-png_bytes = cairosvg.svg2png(bytestring=wave_svg.encode('utf-8'))
-wave_icon = Image.open(io.BytesIO(png_bytes))
-
-st.set_page_config(
-    page_title="Aguamenti Polluter Calculator",
-    page_icon=wave_icon,
-    layout="centered"
-)
-
-# === Custom CSS for elegant design ===
-st.markdown("""
+# --- Animated Background CSS ---
+page_bg = """
 <style>
 body {
-    background-color: #001F3F; /* Dark blue */
-    color: #F5F5F5;
-    border: 6px solid #DAA520; /* Gold border */
-    border-radius: 20px;
-    padding: 20px;
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    color: #e0e1dd;
+    overflow-x: hidden;
 }
 
+/* Animated gradient background */
+[data-testid="stAppViewContainer"] {
+    background: linear-gradient(-45deg, #0b132b, #1c2541, #0b132b, #3a506b);
+    background-size: 400% 400%;
+    animation: gradientMove 12s ease infinite;
+}
+
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+/* Title */
 h1 {
-    color: #FFD700;
-    font-family: 'Trebuchet MS', sans-serif;
+    color: #c5a300;
     text-align: center;
-    font-size: 46px;
-    letter-spacing: 2px;
-    text-shadow: 0px 0px 15px #FFD700;
-    margin-bottom: 10px;
+    font-weight: 900;
+    text-shadow: 0 0 10px #c5a300;
 }
 
-div[data-testid="stAppViewContainer"] {
-    background-color: #001F3F;
-    border-radius: 20px;
-    padding: 25px;
-}
-
-div[data-testid="stMarkdownContainer"] {
+/* Labels */
+.stSelectbox label, .stNumberInput label {
+    color: #e0e1dd !important;
     font-size: 18px;
-    color: #E0E0E0;
-    text-align: center;
+    font-weight: 600;
 }
 
+/* Input boxes */
+.stNumberInput input {
+    background-color: rgba(255,255,255,0.1) !important;
+    color: white !important;
+    border: 1px solid #c5a300 !important;
+    border-radius: 8px;
+}
+
+/* Buttons */
 .stButton>button {
-    background-color: #DAA520;
-    color: black;
-    border-radius: 12px;
+    background: linear-gradient(90deg, #c5a300, #e0c94d);
+    color: #000;
+    border: none;
     font-size: 18px;
     font-weight: bold;
-    transition: 0.3s;
+    border-radius: 10px;
+    padding: 0.6em 1.2em;
+    transition: all 0.4s ease;
+    box-shadow: 0 0 10px rgba(197,163,0,0.6);
 }
 .stButton>button:hover {
-    background-color: #FFD700;
-    color: #001F3F;
+    background: linear-gradient(90deg, #e0c94d, #c5a300);
+    transform: scale(1.07);
+}
+
+/* Result box */
+.result-box {
+    background: rgba(197, 163, 0, 0.9);
+    color: #000;
+    padding: 15px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 20px;
+    font-weight: bold;
+    margin-top: 10px;
+    box-shadow: 0 0 10px rgba(197,163,0,0.6);
+}
+
+/* Animated wave effect at bottom */
+.wave {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 200%;
+    height: 120px;
+    background: radial-gradient(circle, #c5a30033 20%, transparent 70%);
+    animation: waveMove 6s linear infinite;
+    opacity: 0.4;
+}
+@keyframes waveMove {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
 }
 </style>
-""", unsafe_allow_html=True)
+<div class="wave"></div>
+"""
+st.markdown(page_bg, unsafe_allow_html=True)
 
-# === App Title ===
-st.title("Aguamenti Polluter Calculator")
+# --- Title ---
+st.title("💧 Aguamenti Polluter Calculator")
 
-# === Description (new version) ===
-st.markdown("""
-Welcome to **Aguamenti Polluter Calculator**.  
-Use this calculator to determine the **number of moles (n)** and the **total mass**  
-of the heavy metal you choose, using the **calculated sound speed** in your experiment.
-""")
+st.markdown(
+    "Use this scientific calculator to determine the **number of moles (n)** "
+    "and **total mass** of heavy metal pollutants based on the measured speed."
+)
 
-# === Element selection ===
+# --- Element selection ---
 element = st.selectbox(
     "Select the element:",
     ["Cadmium (Cd)", "Mercury (Hg)", "Lead (Pb)"]
 )
 
-# Assign molar masses
+# --- User input ---
+result = st.number_input("Enter the calculated speed:", min_value=0.0, format="%.4f")
+
+# --- Constants ---
+B = 2.2 * 10**9  # Bulk modulus (Pa)
+density = 1 / (10**3)  # density factor (kg/m³)
 molar_masses = {
     "Cadmium (Cd)": 112.4,
     "Mercury (Hg)": 200.59,
     "Lead (Pb)": 207.2
 }
-molar_mass = molar_masses[element]
 
-# === Input field for speed ===
-speed = st.number_input("Enter the calculated speed (m/s):", min_value=0.0, step=0.1)
-
-# === Calculation button ===
+# --- Calculation ---
 if st.button("Calculate"):
-    bulk_modulus = 2.2e9
-    density_water = 1000  # kg/m³
-
+    M = molar_masses[element]
     try:
-        numerator = (bulk_modulus / (speed ** 2)) * (1 / density_water) - 1
-        n = numerator / (molar_mass * (1 / density_water))
-
-        if n < 0 or math.isnan(n):
-            st.error("❌ Invalid result: The calculated number of moles is negative or undefined. Please check your inputs.")
+        n = ((math.sqrt(B * density) / result) - 1) / (M * (1 / 10**3))
+        if n < 0:
+            st.error("❌ Invalid result: the number of moles cannot be negative.")
         else:
-            total_mass = n * molar_mass
-            st.success(f"✅ Number of moles (n): **{n:.4f} mol**")
-            st.info(f"💡 Total mass: **{total_mass:.4f} g**")
-    except ZeroDivisionError:
-        st.error("Speed cannot be zero.")
+            total_mass = n * M
+            st.markdown(f"<div class='result-box'>Number of moles (n): {n:.4f}</div>", unsafe_allow_html=True)
+            st.markdown(f"<div class='result-box'>Total mass: {total_mass:.4f} g</div>", unsafe_allow_html=True)
+    except Exception as e:
+        st.error(f"⚠️ Calculation error: {e}")
 
