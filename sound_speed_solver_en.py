@@ -2,60 +2,74 @@ import streamlit as st
 import math
 
 # --- Page config ---
-st.set_page_config(page_title="ISEF Polluter Calculator", page_icon="🌍", layout="centered")
+st.set_page_config(page_title="Aguamenti Polluter Calculator", page_icon="💧", layout="centered")
 
-# --- Custom background and styling ---
+# --- Animated Background CSS ---
 page_bg = """
 <style>
 body {
-    background: linear-gradient(135deg, #0b132b 40%, #1c2541 80%);
-    color: #e0e1dd;
+    margin: 0;
     font-family: 'Segoe UI', sans-serif;
+    color: #e0e1dd;
+    overflow-x: hidden;
 }
 
+/* Animated gradient background */
 [data-testid="stAppViewContainer"] {
-    background-image: radial-gradient(circle at 10% 20%, #0b132b, #1c2541, #0b132b);
-    background-attachment: fixed;
+    background: linear-gradient(-45deg, #0b132b, #1c2541, #0b132b, #3a506b);
+    background-size: 400% 400%;
+    animation: gradientMove 12s ease infinite;
 }
 
+@keyframes gradientMove {
+    0% {background-position: 0% 50%;}
+    50% {background-position: 100% 50%;}
+    100% {background-position: 0% 50%;}
+}
+
+/* Title */
 h1 {
     color: #c5a300;
     text-align: center;
     font-weight: 900;
-    text-shadow: 1px 1px 4px #888;
+    text-shadow: 0 0 10px #c5a300;
 }
 
+/* Labels */
 .stSelectbox label, .stNumberInput label {
     color: #e0e1dd !important;
     font-size: 18px;
     font-weight: 600;
 }
 
+/* Input boxes */
 .stNumberInput input {
-    background-color: #1c2541 !important;
+    background-color: rgba(255,255,255,0.1) !important;
     color: white !important;
     border: 1px solid #c5a300 !important;
     border-radius: 8px;
 }
 
+/* Buttons */
 .stButton>button {
-    background-color: #c5a300 !important;
-    color: black !important;
+    background: linear-gradient(90deg, #c5a300, #e0c94d);
+    color: #000;
     border: none;
     font-size: 18px;
     font-weight: bold;
     border-radius: 10px;
     padding: 0.6em 1.2em;
-    transition: 0.3s;
+    transition: all 0.4s ease;
+    box-shadow: 0 0 10px rgba(197,163,0,0.6);
 }
-
 .stButton>button:hover {
-    background-color: #e0c94d !important;
-    transform: scale(1.05);
+    background: linear-gradient(90deg, #e0c94d, #c5a300);
+    transform: scale(1.07);
 }
 
+/* Result box */
 .result-box {
-    background-color: rgba(197, 163, 0, 0.9);
+    background: rgba(197, 163, 0, 0.9);
     color: #000;
     padding: 15px;
     border-radius: 12px;
@@ -63,17 +77,35 @@ h1 {
     font-size: 20px;
     font-weight: bold;
     margin-top: 10px;
+    box-shadow: 0 0 10px rgba(197,163,0,0.6);
+}
+
+/* Animated wave effect at bottom */
+.wave {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 200%;
+    height: 120px;
+    background: radial-gradient(circle, #c5a30033 20%, transparent 70%);
+    animation: waveMove 6s linear infinite;
+    opacity: 0.4;
+}
+@keyframes waveMove {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
 }
 </style>
+<div class="wave"></div>
 """
 st.markdown(page_bg, unsafe_allow_html=True)
 
 # --- Title ---
-st.title("🌍 ISEF Polluter Calculator")
+st.title("💧 Aguamenti Polluter Calculator")
 
 st.markdown(
-    "Use this calculator to determine the **number of moles (n)** and the **total mass** of heavy metals "
-    "based on the calculated speed in your experiment."
+    "Use this scientific calculator to determine the **number of moles (n)** "
+    "and **total mass** of heavy metal pollutants based on the measured speed."
 )
 
 # --- Element selection ---
