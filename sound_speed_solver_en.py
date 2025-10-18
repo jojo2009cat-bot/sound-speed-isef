@@ -37,6 +37,16 @@ st.markdown("""
         background-color: #ffea75;
         color: black;
     }
+    .result-box {
+        background-color: gold;
+        color: white;
+        font-weight: bold;
+        text-align: center;
+        border-radius: 15px;
+        padding: 15px;
+        margin-top: 20px;
+        box-shadow: 0px 0px 15px gold;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -58,19 +68,32 @@ molar_masses = {
 v = st.number_input("Enter the calculated sound speed (m/s):", min_value=0.0, format="%.3f")
 
 # عند الضغط على الزر
-if st.button("Calculate moles (n)"):
+if st.button("Calculate moles (n) and mass"):
     try:
         M = molar_masses[element]
         numerator = (2.2 * 10**9) * (1 / 10**3)
-        # المعادلة العكسية لاستخراج n من v:
-        # v = sqrt( numerator / ((n*M*1/10^3) + 1) )
-        # => n = ( (numerator / v^2) - 1 ) / (M * 1/10^3)
+
         if v > 0:
+            # حساب عدد المولات n
             n = ((numerator / (v**2)) - 1) / (M * (1/10**3))
             n = max(n, 0)  # منع النتائج السالبة
-            st.success(f"The number of moles (n) for {element} is approximately **{n:.4f} mol**.")
+
+            # حساب الكتلة الكلية
+            mass = n * M
+
+            # عرض النتائج داخل مربع ذهبي
+            st.markdown(
+                f"""
+                <div class='result-box'>
+                    The number of moles (n) for <b>{element}</b> is:<br>
+                    <span style='font-size:22px;'>{n:.4f} mol</span><br><br>
+                    The total mass is:<br>
+                    <span style='font-size:22px;'>{mass:.4f} g</span>
+                </div>
+                """,
+                unsafe_allow_html=True
+            )
         else:
             st.warning("Please enter a valid (non-zero) speed value.")
     except Exception as e:
         st.error(f"Error: {e}")
-
