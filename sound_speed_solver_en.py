@@ -1,110 +1,76 @@
 import streamlit as st
 import math
 
-# --- Page config ---
-st.set_page_config(page_title="Aguamenti Polluter Calculator", page_icon="🌍", layout="centered")
-
-# --- Custom background and styling ---
-page_bg = """
-<style>
-body {
-    background: linear-gradient(135deg, #0b132b 40%, #1c2541 80%);
-    color: #e0e1dd;
-    font-family: 'Segoe UI', sans-serif;
-}
-
-[data-testid="stAppViewContainer"] {
-    background-image: radial-gradient(circle at 10% 20%, #0b132b, #1c2541, #0b132b);
-    background-attachment: fixed;
-}
-
-h1 {
-    color: #c5a300;
-    text-align: center;
-    font-weight: 900;
-    text-shadow: 1px 1px 4px #888;
-}
-
-.stSelectbox label, .stNumberInput label {
-    color: #e0e1dd !important;
-    font-size: 18px;
-    font-weight: 600;
-}
-
-.stNumberInput input {
-    background-color: #1c2541 !important;
-    color: white !important;
-    border: 1px solid #c5a300 !important;
-    border-radius: 8px;
-}
-
-.stButton>button {
-    background-color: #c5a300 !important;
-    color: black !important;
-    border: none;
-    font-size: 18px;
-    font-weight: bold;
-    border-radius: 10px;
-    padding: 0.6em 1.2em;
-    transition: 0.3s;
-}
-
-.stButton>button:hover {
-    background-color: #e0c94d !important;
-    transform: scale(1.05);
-}
-
-.result-box {
-    background-color: rgba(197, 163, 0, 0.9);
-    color: #000;
-    padding: 15px;
-    border-radius: 12px;
-    text-align: center;
-    font-size: 20px;
-    font-weight: bold;
-    margin-top: 10px;
-}
-</style>
-"""
-st.markdown(page_bg, unsafe_allow_html=True)
-
-# --- Title ---
-st.title("Aguamenti Polluter Calculator")
-
-st.markdown(
-    "Use this calculator to determine the **number of moles (n)** and the **total mass** of heavy metals "
-    "based on the calculated speed in your experiment."
+# إعدادات الصفحة
+st.set_page_config(
+    page_title="Aguamenti Calculator",
+    page_icon="🌊",
+    layout="centered"
 )
 
-# --- Element selection ---
-element = st.selectbox(
-    "Select the element:",
-    ["Cadmium (Cd)", "Mercury (Hg)", "Lead (Pb)"]
-)
+# تصميم الخلفية والألوان
+st.markdown("""
+    <style>
+    body {
+        background-color: #0b1e3d;
+        color: white;
+    }
+    .main {
+        background-color: #0b1e3d;
+    }
+    h1 {
+        text-align: center;
+        font-size: 3em;
+        color: white;
+        text-shadow: 0px 0px 10px gold, 0px 0px 20px gold;
+        border-bottom: 3px solid gold;
+        padding-bottom: 10px;
+    }
+    .stButton>button {
+        background-color: gold;
+        color: black;
+        font-weight: bold;
+        border-radius: 10px;
+        padding: 10px 20px;
+    }
+    .stButton>button:hover {
+        background-color: #ffea75;
+        color: black;
+    }
+    </style>
+""", unsafe_allow_html=True)
 
-# --- User input ---
-result = st.number_input("Enter the calculated speed:", min_value=0.0, format="%.4f")
+# العنوان والوصف
+st.markdown("<h1>Aguamenti Calculator</h1>", unsafe_allow_html=True)
+st.write("Use this calculator to find the number of moles (n) of your chosen heavy metal based on your calculated sound speed (v).")
 
-# --- Constants ---
-B = 2.2 * 10**9  # Bulk modulus (Pa)
-density = 1 / (10**3)  # density factor (kg/m³)
+# اختيار العنصر
+element = st.selectbox("Choose the heavy metal:", ["Cadmium (Cd)", "Mercury (Hg)", "Lead (Pb)"])
+
+# قيم الكتل المولية للعناصر
 molar_masses = {
     "Cadmium (Cd)": 112.4,
     "Mercury (Hg)": 200.59,
     "Lead (Pb)": 207.2
 }
 
-# --- Calculation ---
-if st.button("Calculate"):
-    M = molar_masses[element]
+# إدخال السرعة
+v = st.number_input("Enter the calculated sound speed (m/s):", min_value=0.0, format="%.3f")
+
+# عند الضغط على الزر
+if st.button("Calculate moles (n)"):
     try:
-        n = ((math.sqrt(B * density) / result) - 1) / (M * (1 / 10**3))
-        if n < 0:
-            st.error("❌ Invalid result: the number of moles cannot be negative.")
+        M = molar_masses[element]
+        numerator = (2.2 * 10**9) * (1 / 10**3)
+        # المعادلة العكسية لاستخراج n من v:
+        # v = sqrt( numerator / ((n*M*1/10^3) + 1) )
+        # => n = ( (numerator / v^2) - 1 ) / (M * 1/10^3)
+        if v > 0:
+            n = ((numerator / (v**2)) - 1) / (M * (1/10**3))
+            n = max(n, 0)  # منع النتائج السالبة
+            st.success(f"The number of moles (n) for {element} is approximately **{n:.4f} mol**.")
         else:
-            total_mass = n * M
-            st.markdown(f"<div class='result-box'>Number of moles (n): {n:.4f}</div>", unsafe_allow_html=True)
-            st.markdown(f"<div class='result-box'>Total mass: {total_mass:.4f} g</div>", unsafe_allow_html=True)
+            st.warning("Please enter a valid (non-zero) speed value.")
     except Exception as e:
-        st.error(f"⚠️ Calculation error: {e}")
+        st.error(f"Error: {e}")
 
