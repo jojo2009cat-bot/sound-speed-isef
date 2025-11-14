@@ -1,5 +1,4 @@
 import streamlit as st
-import math
 
 # --- إعداد الصفحة ---
 st.set_page_config(page_title="Aguamenti Calculator for Heavy Metals", layout="centered")
@@ -35,7 +34,10 @@ safe_limits_mg = {
 def calculate_moles_and_mass(v, metal_name):
     molar_mass = molar_masses[metal_name]  # g/mol
     try:
-        n = (2.2e9 * 1e-3 / (v**2) - 1) / (molar_mass * 1e-3)
+        numerator = 2.2e6
+        denominator = v**2
+        n = (numerator / denominator - 1) / (molar_mass * 1e-3)
+        # إذا n < 0 فهذا خطأ، أما n = 0 طبيعي
         if n < 0:
             return None, None, "Error: Moles calculated as negative!"
         mass_mg = n * molar_mass * 1000  # mg
@@ -50,14 +52,14 @@ if v_input > 0:
         st.error(error)
     else:
         # --- تحديد حالة الأمان بناءً على الكتلة بالملليجرام ---
-        if mass_mg > safe_limits_mg[metal]:
+        if mass_mg > safe_limits_mg[metal] + 1e-9:
             status_text = "Unsafe for human use"
             status_color = "#FF4C4C"  # أحمر
         else:
             status_text = "Safe for human use"
             status_color = "#90EE90"  # أخضر فاتح
 
-        # --- عرض النتائج في 3 مربعات ---
+        # --- عرض النتائج ---
         col1, col2, col3 = st.columns(3)
 
         col1.markdown(f"""
@@ -80,4 +82,3 @@ if v_input > 0:
             <p style='font-size:14px;'>{status_text}</p>
         </div>
         """, unsafe_allow_html=True)
-
