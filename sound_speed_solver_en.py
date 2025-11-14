@@ -1,76 +1,91 @@
 import streamlit as st
 import math
 
-# إعداد الصفحة
-st.set_page_config(page_title="Aguamenti Calculator", layout="centered")
-
-# عنوان الموقع
-st.markdown("<h1 style='text-align: center; color: #2C3E50;'>Aguamenti Calculator for Heavy Metals</h1>", unsafe_allow_html=True)
-st.markdown("<p style='text-align: center; color: #34495E;'>A calculator that gives you the amount of heavy metals in fresh water using the velocity of sound</p>", unsafe_allow_html=True)
-st.markdown("---")
-
-# اختيار العنصر
-metal = st.selectbox("Choose the metal", ["Lead (Pb)", "Cadmium (Cd)", "Mercury (Hg)"])
-
-# إدخال سرعة الصوت
-velocity_input = st.number_input("Enter the velocity of sound (m/s)", min_value=0.0, step=0.01, format="%.6f")
-
-# بيانات العناصر: الكتلة المولية (g/mol) والحد الأقصى للسلامة (mg)
-metals_data = {
-    "Lead (Pb)": {"molar_mass": 207.2, "limit_mg": 0.01},
-    "Cadmium (Cd)": {"molar_mass": 112.41, "limit_mg": 0.003},
-    "Mercury (Hg)": {"molar_mass": 200.59, "limit_mg": 0.001},
+# -----------------------
+# بيانات العناصر والحدود القصوى
+# -----------------------
+metals = {
+    "Lead (Pb)": {"molar_mass": 207.2, "max_mass_mg": 0.01},
+    "Cadmium (Cd)": {"molar_mass": 112.41, "max_mass_mg": 0.003},
+    "Mercury (Hg)": {"molar_mass": 200.59, "max_mass_mg": 0.001},
 }
 
-def calculate_moles_and_mass(v, molar_mass):
+# -----------------------
+# تصميم الواجهة
+# -----------------------
+st.set_page_config(page_title="Aguamenti Calculator", page_icon="⚗️", layout="centered")
+st.markdown(
     """
-    إعادة ترتيب القانون لحساب عدد المولات n:
-    v = sqrt((2.2e9 * 1e-3) / (n * molar_mass * 1e-3 + 1))
-    """
-    try:
-        # نربي السرعة لإيجاد المقام
-        v2 = v ** 2
-        # الحساب الداخلي للقانون
-        inner = (2.2e6 / v2) - 1
-        n = inner / (molar_mass * 1e-3)
-        if n < 0:
-            return -1, 0
-        mass_mg = n * molar_mass * 1000  # التحويل للمللي جرام
-        return n, mass_mg
-    except:
-        return -1, 0
+    <div style='text-align:center;'>
+        <h1 style='color:#2a52be;'>Aguamenti Calculator for Heavy Metals</h1>
+        <p style='color:#5f9ea0;'>A calculator that gives you the amount of heavy metals in fresh water using the velocity of sound</p>
+    </div>
+    """,
+    unsafe_allow_html=True
+)
 
-if velocity_input > 0:
-    n, mass_mg = calculate_moles_and_mass(velocity_input, metals_data[metal]["molar_mass"])
+st.markdown("<hr style='border:1px solid #f0e68c'>", unsafe_allow_html=True)
+
+# -----------------------
+# اختيار المعدن وإدخال السرعة
+# -----------------------
+metal_choice = st.selectbox("Choose the metal", list(metals.keys()))
+v = st.number_input("Enter the velocity of sound (m/s)", min_value=0.0, format="%.5f")
+
+# -----------------------
+# الحسابات
+# -----------------------
+if v > 0:
+    molar_mass = metals[metal_choice]["molar_mass"]  # g/mol
+    max_mass_mg = metals[metal_choice]["max_mass_mg"]
+
+    # معادلة حساب عدد المولات
+    try:
+        n = (2.2e9 * 1e-3) / (v**2) - 1
+        n = n / (molar_mass * 1e-3)  # تحويل g/mol إلى kg/mol
+        n = round(n, 6)
+    except:
+        n = -1
 
     if n < 0:
-        st.error("The calculated number of moles is negative. Please check the velocity input.")
+        st.error("Error: Number of moles calculated is negative.")
         n = 0
-        mass_mg = 0
 
-    # عرض النتائج في ثلاثة مربعات
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        st.markdown(f"<div style='background-color:#ADD8E6; padding:20px; text-align:center; border-radius:10px;'>Moles<br>{n:.6f}</div>", unsafe_allow_html=True)
-    with col2:
-        st.markdown(f"<div style='background-color:#ADD8E6; padding:20px; text-align:center; border-radius:10px;'>Mass (mg)<br>{mass_mg:.6f}</div>", unsafe_allow_html=True)
-    with col3:
-        limit = metals_data[metal]["limit_mg"]
-        if mass_mg > limit:
-            color = "#E74C3C"
-            text = "Unsafe for human use"
-        else:
-            color = "#2ECC71"
-            text = "Safe for human use"
-        st.markdown(f"<div style='background-color:{color}; padding:20px; text-align:center; border-radius:10px;'>{text}</div>", unsafe_allow_html=True)
-
-    # الحد الأدنى للكتلة لكل عنصر
-    st.markdown("---")
-    st.markdown("Minimum detectable mass (mg) for each element:")
-    for m in metals_data:
-        st.markdown(f"- {m}: {metals_data[m]['limit_mg']} mg")
-
+    # حساب الكتلة بالمللي جرام
+    mass_mg = n * molar_mass * 1000  # g * 1000 = mg
+    mass_mg = round(mass_mg, 6)
+    
+    # -----------------------
+    # تحديد حالة الأمان
+    # -----------------------
+    if mass_mg > max_mass_mg:
+        safety_status = ("Unsafe for human use", "#ff4c4c")
+    else:
+        safety_status = ("Safe for human use", "#90ee90")
+    
+    # -----------------------
+    # عرض النتائج
+    # -----------------------
+    st.markdown(
+        f"""
+        <div style='display:flex; gap:20px; justify-content:center; margin-top:20px;'>
+            <div style='background-color:#add8e6; padding:15px; border-radius:10px; text-align:center; width:180px;'>
+                <h3>Number of Moles</h3>
+                <p>{n}</p>
+            </div>
+            <div style='background-color:#add8e6; padding:15px; border-radius:10px; text-align:center; width:180px;'>
+                <h3>Mass (mg)</h3>
+                <p>{mass_mg}</p>
+                <small>Maximum allowed: {max_mass_mg} mg</small>
+            </div>
+            <div style='background-color:{safety_status[1]}; padding:15px; border-radius:10px; text-align:center; width:180px;'>
+                <h3>Safety Status</h3>
+                <p>{safety_status[0]}</p>
+            </div>
+        </div>
+        """,
+        unsafe_allow_html=True
+    )
 else:
-    st.warning("Please enter a velocity greater than zero to calculate.")
+    st.warning("Please enter a velocity greater than zero.")
 
