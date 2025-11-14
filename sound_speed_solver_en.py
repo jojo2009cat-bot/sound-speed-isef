@@ -25,40 +25,32 @@ molar_masses = {
     "Mercury (Hg)": 200.59
 }
 
-densities = {  # g/cm³
-    "Lead (Pb)": 11.34,
-    "Cadmium (Cd)": 8.65,
-    "Mercury (Hg)": 13.534
-}
-
-safe_limits_ml = {
-    "Lead (Pb)": 0.01,      # ml
+safe_limits_mg = {
+    "Lead (Pb)": 0.01,      # mg
     "Cadmium (Cd)": 0.003,
     "Mercury (Hg)": 0.001
 }
 
 # --- حساب عدد المولات والكتلة ---
-def calculate_moles_mass_volume(v, metal_name):
+def calculate_moles_and_mass(v, metal_name):
     molar_mass = molar_masses[metal_name]  # g/mol
-    density = densities[metal_name]        # g/cm³
     try:
         n = (2.2e9 * 1e-3 / (v**2) - 1) / (molar_mass * 1e-3)
         if n < 0:
-            return None, None, None, "Error: Moles calculated as negative!"
+            return None, None, "Error: Moles calculated as negative!"
         mass_mg = n * molar_mass * 1000  # mg
-        volume_ml = (mass_mg / 1000) / density
-        return n, mass_mg, volume_ml, ""
+        return n, mass_mg, ""
     except Exception as e:
-        return None, None, None, str(e)
+        return None, None, str(e)
 
 if v_input > 0:
-    n, mass_mg, volume_ml, error = calculate_moles_mass_volume(v_input, metal)
+    n, mass_mg, error = calculate_moles_and_mass(v_input, metal)
     
     if error:
         st.error(error)
     else:
-        # --- تحديد حالة الأمان ---
-        if volume_ml > safe_limits_ml[metal]:
+        # --- تحديد حالة الأمان بناءً على الكتلة بالملليجرام ---
+        if mass_mg > safe_limits_mg[metal]:
             status_text = "Unsafe for human use"
             status_color = "#FF4C4C"  # أحمر
         else:
@@ -79,8 +71,6 @@ if v_input > 0:
         <div style='background-color:#ADD8E6; padding:15px; border-radius:10px; text-align:center;'>
             <h5 style='font-size:16px;'>Mass (mg)</h5>
             <p style='font-size:14px;'>{mass_mg:.6f}</p>
-            <h5 style='font-size:16px;'>Volume (ml)</h5>
-            <p style='font-size:14px;'>{volume_ml:.6f}</p>
         </div>
         """, unsafe_allow_html=True)
 
