@@ -72,6 +72,7 @@ if v_input > 0:
         <div style='background-color:#ADD8E6; padding:12px; border-radius:10px; text-align:center;'>
             <h5 style='font-size:16px;'>Mass (mg)</h5>
             <p style='font-size:14px;'>{mass_mg:.6f}</p>
+            <p style='font-size:12px; color:#333;'>Max allowed: {safe_limits_mg[metal]:.3f} mg</p>
         </div>
         """, unsafe_allow_html=True)
 
