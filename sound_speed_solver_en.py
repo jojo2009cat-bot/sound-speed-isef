@@ -15,7 +15,7 @@ metal = st.selectbox("Choose the metal", ["Lead (Pb)", "Cadmium (Cd)", "Mercury 
 # إدخال سرعة الصوت
 velocity_input = st.number_input("Enter the velocity of sound (m/s)", min_value=0.0, step=0.01, format="%.6f")
 
-# بيانات العناصر: الكتلة المولية والحد الأقصى للسلامة (mg)
+# بيانات العناصر: الكتلة المولية (g/mol) والحد الأقصى للسلامة (mg)
 metals_data = {
     "Lead (Pb)": {"molar_mass": 207.2, "limit_mg": 0.01},
     "Cadmium (Cd)": {"molar_mass": 112.41, "limit_mg": 0.003},
@@ -24,17 +24,18 @@ metals_data = {
 
 def calculate_moles_and_mass(v, molar_mass):
     """
-    إعادة ترتيب القانون لحساب n بدقة:
-    v = sqrt(2.2e6 / (n*molar_mass*1e-3 + 1))
+    إعادة ترتيب القانون لحساب عدد المولات n:
+    v = sqrt((2.2e9 * 1e-3) / (n * molar_mass * 1e-3 + 1))
     """
     try:
-        numerator = 2.2e6  # 2.2e9 * 1e-3
-        denominator = v**2
-        inner = numerator / denominator - 1
+        # نربي السرعة لإيجاد المقام
+        v2 = v ** 2
+        # الحساب الداخلي للقانون
+        inner = (2.2e6 / v2) - 1
         n = inner / (molar_mass * 1e-3)
         if n < 0:
             return -1, 0
-        mass_mg = n * molar_mass * 1000
+        mass_mg = n * molar_mass * 1000  # التحويل للمللي جرام
         return n, mass_mg
     except:
         return -1, 0
@@ -47,7 +48,7 @@ if velocity_input > 0:
         n = 0
         mass_mg = 0
 
-    # عرض النتائج
+    # عرض النتائج في ثلاثة مربعات
     col1, col2, col3 = st.columns(3)
 
     with col1:
