@@ -24,15 +24,17 @@ metals_data = {
 
 def calculate_moles_and_mass(v, molar_mass):
     """
-    إعادة ترتيب القانون لحساب n:
-    v = sqrt((2.2e9 * 1e-3) / (n * molar_mass * 1e-3 + 1))
+    إعادة ترتيب القانون لحساب n بدقة:
+    v = sqrt(2.2e6 / (n*molar_mass*1e-3 + 1))
     """
     try:
-        n = (2.2e6 / (v**2)) - 1
-        n = n / (molar_mass * 1e-3)
+        numerator = 2.2e6  # 2.2e9 * 1e-3
+        denominator = v**2
+        inner = numerator / denominator - 1
+        n = inner / (molar_mass * 1e-3)
         if n < 0:
             return -1, 0
-        mass_mg = n * molar_mass * 1000  # تحويل للمللي جرام
+        mass_mg = n * molar_mass * 1000
         return n, mass_mg
     except:
         return -1, 0
@@ -64,10 +66,9 @@ if velocity_input > 0:
 
     # الحد الأدنى للكتلة لكل عنصر
     st.markdown("---")
-    st.markdown(f"Minimum detectable mass (mg) for each element:")
-    st.markdown(f"- Lead (Pb): {metals_data['Lead (Pb)']['limit_mg']} mg")
-    st.markdown(f"- Cadmium (Cd): {metals_data['Cadmium (Cd)']['limit_mg']} mg")
-    st.markdown(f"- Mercury (Hg): {metals_data['Mercury (Hg)']['limit_mg']} mg")
+    st.markdown("Minimum detectable mass (mg) for each element:")
+    for m in metals_data:
+        st.markdown(f"- {m}: {metals_data[m]['limit_mg']} mg")
 
 else:
     st.warning("Please enter a velocity greater than zero to calculate.")
