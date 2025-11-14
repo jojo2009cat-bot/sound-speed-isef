@@ -43,8 +43,47 @@ if v_input > 0:
     if error:
         st.error(error)
     else:
-        # --- مربعات النتائج ---
+        # --- تحديد حالة الأمان ---
+        safe_limits = {
+            "Lead (Pb)": 0.01,      # mg
+            "Cadmium (Cd)": 0.003,
+            "Mercury (Hg)": 0.001
+        }
+
+        if metal == "Lead (Pb)" and mass_mg > safe_limits[metal]:
+            status_text = "Unsafe for human use"
+            status_color = "#FF4C4C"  # أحمر
+        elif metal == "Cadmium (Cd)" and mass_mg > safe_limits[metal]:
+            status_text = "Unsafe for human use"
+            status_color = "#FF4C4C"
+        elif metal == "Mercury (Hg)" and mass_mg > safe_limits[metal]:
+            status_text = "Unsafe for human use"
+            status_color = "#FF4C4C"
+        else:
+            status_text = "Safe for human use"
+            status_color = "#90EE90"  # أخضر فاتح
+
+        # --- عرض النتائج في 3 مربعات ---
         col1, col2, col3 = st.columns(3)
 
-        # مربع عدد المولات
-        col1.markdown(f"<div style='background-color:#ADD8E6
+        col1.markdown(f"""
+        <div style='background-color:#ADD8E6; padding:20px; border-radius:10px; text-align:center;'>
+            <h4>Moles (n)</h4>
+            <p>{n:.6f}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        col2.markdown(f"""
+        <div style='background-color:#ADD8E6; padding:20px; border-radius:10px; text-align:center;'>
+            <h4>Mass (mg)</h4>
+            <p>{mass_mg:.6f}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
+        col3.markdown(f"""
+        <div style='background-color:{status_color}; padding:20px; border-radius:10px; text-align:center;'>
+            <h4>Status</h4>
+            <p>{status_text}</p>
+        </div>
+        """, unsafe_allow_html=True)
+
