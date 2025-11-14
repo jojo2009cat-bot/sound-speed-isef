@@ -1,111 +1,147 @@
-import streamlit as st
-import math
-
-# إعدادات الصفحة
-st.set_page_config(
-    page_title="Aguamenti Calculator",
-    page_icon="🌊",
-    layout="centered"
-)
-
-# تصميم الخلفية والألوان
-st.markdown("""
-    <style>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aguamenti Calculator for Heavy Metals</title>
+<style>
     body {
-        background-color: #cfe8ff;
-        color: #000000;
-    }
-    .main {
-        background-color: #cfe8ff;
+        font-family: Arial, sans-serif;
+        background-color: #E6F0FA; /* أزرق فاتح هادي */
+        color: #333;
+        text-align: center;
+        padding: 20px;
     }
     h1 {
-        text-align: center;
-        font-size: 3em;
-        color: #ffffff;
-        text-shadow: 0px 0px 10px #ffeb99;
-        border-bottom: 3px solid #ffeb99;
-        padding-bottom: 10px;
+        color: #F5E79E; /* أصفر فاتح */
+        margin-bottom: 5px;
     }
-    .stButton>button {
-        background-color: #ffeb99;
-        color: #000;
+    h3 {
+        color: #666;
+        margin-bottom: 20px;
+    }
+    label {
         font-weight: bold;
-        border-radius: 10px;
-        padding: 10px 20px;
-        border: none;
-        transition: all 0.3s ease;
+        display: block;
+        margin: 10px 0 5px;
     }
-    .stButton>button:hover {
-        background-color: #fff6cc;
-        color: #000;
+    select, input {
+        padding: 8px;
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+    button {
+        padding: 10px 20px;
+        font-size: 16px;
+        background-color: #F5E79E;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        margin-bottom: 20px;
+    }
+    .result-container {
+        display: flex;
+        justify-content: center;
+        gap: 15px;
+        margin-top: 20px;
+        flex-wrap: wrap;
     }
     .result-box {
-        background-color: #ffeb99;
-        color: #000000;
-        font-weight: bold;
-        text-align: center;
-        border-radius: 15px;
         padding: 15px;
-        margin-top: 20px;
-        box-shadow: 0px 0px 10px #ffe97f;
+        border-radius: 8px;
+        min-width: 150px;
+        font-weight: bold;
+        font-size: 16px;
     }
-    </style>
-""", unsafe_allow_html=True)
+    .moles, .mass {
+        background-color: #B3D9FF; /* أزرق فاتح للمولات والكمية */
+    }
+    .safe {
+        background-color: #C4F0C5; /* أخضر */
+    }
+    .unsafe {
+        background-color: #FF8C8C; /* أحمر */
+    }
+</style>
+</head>
+<body>
 
-# العنوان والوصف
-st.markdown("<h1>Aguamenti Calculator</h1>", unsafe_allow_html=True)
-st.write("Use this calculator to find the number of moles (n) and total mass of your chosen heavy metal using your experimental sound speed.")
+<h1>Aguamenti Calculator for Heavy Metals</h1>
+<h3>A calculator that gives you the amount of heavy metals in fresh water using the velocity of sound</h3>
 
-# اختيار العنصر
-element = st.selectbox("Choose the heavy metal:", ["Cadmium (Cd)", "Mercury (Hg)", "Lead (Pb)"])
+<label for="metal">Choose the metal:</label>
+<select id="metal">
+    <option value="Pb">Lead (Pb)</option>
+    <option value="Cd">Cadmium (Cd)</option>
+    <option value="Hg">Mercury (Hg)</option>
+</select>
 
-# قيم الكتل المولية
-molar_masses = {
-    "Cadmium (Cd)": 112.4,
-    "Mercury (Hg)": 200.59,
-    "Lead (Pb)": 207.2
+<label for="velocity">Enter the velocity of sound (m/s):</label>
+<input type="number" id="velocity" step="0.01">
+
+<br>
+<button onclick="calculate()">Calculate</button>
+
+<div class="result-container">
+    <div id="moles" class="result-box moles">Moles: </div>
+    <div id="mass" class="result-box mass">Mass (mg): </div>
+    <div id="safety" class="result-box">Safety: </div>
+</div>
+
+<script>
+function calculate() {
+    const metal = document.getElementById('metal').value;
+    const v = parseFloat(document.getElementById('velocity').value);
+    if (isNaN(v) || v <= 0) {
+        alert("Please enter a valid positive velocity");
+        return;
+    }
+
+    // Molar masses in g/mol
+    const molarMasses = {
+        Pb: 207.2,
+        Cd: 112.41,
+        Hg: 200.59
+    };
+
+    // Safety limits in mg
+    const limits = {
+        Pb: 0.01,
+        Cd: 0.003,
+        Hg: 0.001
+    };
+
+    // حساب عدد المولات
+    const numerator = 2.2e9 * 1e-3;
+    const molarMass = molarMasses[metal] * 1e-3; // تحويل للكيلوجرام
+    let n = (numerator / (v*v)) - 1;
+    n = n / molarMass;
+
+    const molesBox = document.getElementById('moles');
+    const massBox = document.getElementById('mass');
+    const safetyBox = document.getElementById('safety');
+
+    if (n < 0) {
+        molesBox.textContent = "Moles: Error, negative result!";
+        massBox.textContent = "Mass (mg): Error";
+        safetyBox.textContent = "";
+        return;
+    }
+
+    const massMg = n * molarMasses[metal] * 1000; // تحويل للملليجرام
+
+    molesBox.textContent = "Moles: " + n.toFixed(6);
+    massBox.textContent = "Mass (mg): " + massMg.toFixed(6);
+
+    if (massMg > limits[metal]*1000) { // التحويل من مللي لتر لمليجرام على حسب كثافة تقريبية
+        safetyBox.textContent = "Unsafe for human use";
+        safetyBox.className = "result-box unsafe";
+    } else {
+        safetyBox.textContent = "Safe for human use";
+        safetyBox.className = "result-box safe";
+    }
 }
+</script>
 
-# إدخال السرعة
-v = st.number_input("Enter the calculated sound speed (m/s):", min_value=0.0, format="%.3f")
-
-# عند الضغط على الزر
-if st.button("Calculate moles (n) and mass"):
-    try:
-        M = molar_masses[element]
-        numerator = (2.2 * 10**9) * (1 / 10**3)
-
-        if v > 0:
-            # حساب عدد المولات
-            n = ((numerator / (v**2)) - 1) / (M * (1/10**3))
-            n = max(n, 0)  # منع النتائج السالبة
-
-            # حساب الكتلة الكلية
-            mass = n * M
-
-            # عرض النتائج في مربعين منفصلين
-            st.markdown(
-                f"""
-                <div class='result-box'>
-                    The number of moles (n) for <b>{element}</b> is:<br>
-                    <span style='font-size:22px;'>{n:.4f} mol</span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-            st.markdown(
-                f"""
-                <div class='result-box'>
-                    The total mass is:<br>
-                    <span style='font-size:22px;'>{mass:.4f} g</span>
-                </div>
-                """,
-                unsafe_allow_html=True
-            )
-
-        else:
-            st.warning("Please enter a valid (non-zero) speed value.")
-    except Exception as e:
-        st.error(f"Error: {e}")
-
+</body>
+</html>
