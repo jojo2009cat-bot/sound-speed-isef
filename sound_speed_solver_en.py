@@ -4,18 +4,18 @@ import math
 # --- إعداد الصفحة ---
 st.set_page_config(page_title="Aguamenti Calculator for Heavy Metals", layout="centered")
 st.markdown("""
-    <h1 style='text-align: center; color: #2a3eb1;'>Aguamenti Calculator for Heavy Metals</h1>
-    <h4 style='text-align: center; color: #4a4a4a;'>A calculator that gives you the amount of heavy metals in fresh water using the velocity of sound</h4>
+    <h2 style='text-align: center; color: #2a3eb1; font-size:28px;'>Aguamenti Calculator for Heavy Metals</h2>
+    <h5 style='text-align: center; color: #4a4a4a; font-size:16px;'>A calculator that gives you the amount of heavy metals in fresh water using the velocity of sound</h5>
 """, unsafe_allow_html=True)
 
 st.markdown("---")
 
 # --- اختيار المعدن ---
-st.markdown("<h5>Choose the metal:</h5>", unsafe_allow_html=True)
+st.markdown("<h6 style='font-size:14px;'>Choose the metal:</h6>", unsafe_allow_html=True)
 metal = st.selectbox("", ["Lead (Pb)", "Cadmium (Cd)", "Mercury (Hg)"])
 
 # --- إدخال سرعة الصوت ---
-st.markdown("<h5>Enter the velocity of sound (m/s):</h5>", unsafe_allow_html=True)
+st.markdown("<h6 style='font-size:14px;'>Enter the velocity of sound (m/s):</h6>", unsafe_allow_html=True)
 v_input = st.number_input("", min_value=0.0, format="%.5f")
 
 # --- البيانات الأساسية ---
@@ -46,7 +46,6 @@ def calculate_moles_mass_volume(v, metal_name):
         if n < 0:
             return None, None, None, "Error: Moles calculated as negative!"
         mass_mg = n * molar_mass * 1000  # mg
-        # الحجم بالمللي لتر: 1 cm³ = 1 ml, كثافة بال g/cm³، mass_mg → g
         volume_ml = (mass_mg / 1000) / density
         return n, mass_mg, volume_ml, ""
     except Exception as e:
@@ -70,25 +69,25 @@ if v_input > 0:
         col1, col2, col3 = st.columns(3)
 
         col1.markdown(f"""
-        <div style='background-color:#ADD8E6; padding:20px; border-radius:10px; text-align:center;'>
-            <h4>Moles (n)</h4>
-            <p>{n:.6f}</p>
+        <div style='background-color:#ADD8E6; padding:15px; border-radius:10px; text-align:center;'>
+            <h5 style='font-size:16px;'>Moles (n)</h5>
+            <p style='font-size:14px;'>{n:.6f}</p>
         </div>
         """, unsafe_allow_html=True)
 
         col2.markdown(f"""
-        <div style='background-color:#ADD8E6; padding:20px; border-radius:10px; text-align:center;'>
-            <h4>Mass (mg)</h4>
-            <p>{mass_mg:.6f}</p>
-            <h4>Volume (ml)</h4>
-            <p>{volume_ml:.6f}</p>
+        <div style='background-color:#ADD8E6; padding:15px; border-radius:10px; text-align:center;'>
+            <h5 style='font-size:16px;'>Mass (mg)</h5>
+            <p style='font-size:14px;'>{mass_mg:.6f}</p>
+            <h5 style='font-size:16px;'>Volume (ml)</h5>
+            <p style='font-size:14px;'>{volume_ml:.6f}</p>
         </div>
         """, unsafe_allow_html=True)
 
         col3.markdown(f"""
-        <div style='background-color:{status_color}; padding:20px; border-radius:10px; text-align:center;'>
-            <h4>Status</h4>
-            <p>{status_text}</p>
+        <div style='background-color:{status_color}; padding:15px; border-radius:10px; text-align:center;'>
+            <h5 style='font-size:16px;'>Status</h5>
+            <p style='font-size:14px;'>{status_text}</p>
         </div>
         """, unsafe_allow_html=True)
 
