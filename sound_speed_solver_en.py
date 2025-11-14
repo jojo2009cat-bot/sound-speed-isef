@@ -30,7 +30,7 @@ st.markdown("<hr style='border:1px solid #f0e68c'>", unsafe_allow_html=True)
 # اختيار المعدن وإدخال السرعة
 # -----------------------
 metal_choice = st.selectbox("Choose the metal", list(metals.keys()))
-v = st.number_input("Enter the velocity of sound (m/s)", min_value=0.0, format="%.5f")
+v = st.number_input("Enter the velocity of sound (m/s)", min_value=0.0, format="%.12f")  # دقة أعلى
 
 # -----------------------
 # الحسابات
@@ -43,17 +43,14 @@ if v > 0:
     try:
         n = (2.2e9 * 1e-3) / (v**2) - 1
         n = n / (molar_mass * 1e-3)  # تحويل g/mol إلى kg/mol
-        n = round(n, 6)
+        n = max(n, 0)  # منع القيم السالبة
+        n = float(f"{n:.12f}")  # منع ظهور الصيغة العلمية
     except:
-        n = -1
-
-    if n < 0:
-        st.error("Error: Number of moles calculated is negative.")
         n = 0
 
     # حساب الكتلة بالمللي جرام
     mass_mg = n * molar_mass * 1000  # g * 1000 = mg
-    mass_mg = round(mass_mg, 6)
+    mass_mg = float(f"{mass_mg:.12f}")  # منع ظهور الصيغة العلمية
     
     # -----------------------
     # تحديد حالة الأمان
