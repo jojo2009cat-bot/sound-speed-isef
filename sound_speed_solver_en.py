@@ -25,40 +25,43 @@ molar_masses = {
     "Mercury (Hg)": 200.59
 }
 
+densities = {  # g/cm³
+    "Lead (Pb)": 11.34,
+    "Cadmium (Cd)": 8.65,
+    "Mercury (Hg)": 13.534
+}
+
+safe_limits_ml = {
+    "Lead (Pb)": 0.01,      # ml
+    "Cadmium (Cd)": 0.003,
+    "Mercury (Hg)": 0.001
+}
+
 # --- حساب عدد المولات والكتلة ---
-def calculate_moles_and_mass(v, metal_name):
+def calculate_moles_mass_volume(v, metal_name):
     molar_mass = molar_masses[metal_name]  # g/mol
+    density = densities[metal_name]        # g/cm³
     try:
         n = (2.2e9 * 1e-3 / (v**2) - 1) / (molar_mass * 1e-3)
         if n < 0:
-            return None, None, "Error: Moles calculated as negative!"
-        mass_mg = n * molar_mass * 1000  # تحويل للملليجرام
-        return n, mass_mg, ""
+            return None, None, None, "Error: Moles calculated as negative!"
+        mass_mg = n * molar_mass * 1000  # mg
+        # الحجم بالمللي لتر: 1 cm³ = 1 ml, كثافة بال g/cm³، mass_mg → g
+        volume_ml = (mass_mg / 1000) / density
+        return n, mass_mg, volume_ml, ""
     except Exception as e:
-        return None, None, str(e)
+        return None, None, None, str(e)
 
 if v_input > 0:
-    n, mass_mg, error = calculate_moles_and_mass(v_input, metal)
+    n, mass_mg, volume_ml, error = calculate_moles_mass_volume(v_input, metal)
     
     if error:
         st.error(error)
     else:
         # --- تحديد حالة الأمان ---
-        safe_limits = {
-            "Lead (Pb)": 0.01,      # mg
-            "Cadmium (Cd)": 0.003,
-            "Mercury (Hg)": 0.001
-        }
-
-        if metal == "Lead (Pb)" and mass_mg > safe_limits[metal]:
+        if volume_ml > safe_limits_ml[metal]:
             status_text = "Unsafe for human use"
             status_color = "#FF4C4C"  # أحمر
-        elif metal == "Cadmium (Cd)" and mass_mg > safe_limits[metal]:
-            status_text = "Unsafe for human use"
-            status_color = "#FF4C4C"
-        elif metal == "Mercury (Hg)" and mass_mg > safe_limits[metal]:
-            status_text = "Unsafe for human use"
-            status_color = "#FF4C4C"
         else:
             status_text = "Safe for human use"
             status_color = "#90EE90"  # أخضر فاتح
@@ -77,6 +80,8 @@ if v_input > 0:
         <div style='background-color:#ADD8E6; padding:20px; border-radius:10px; text-align:center;'>
             <h4>Mass (mg)</h4>
             <p>{mass_mg:.6f}</p>
+            <h4>Volume (ml)</h4>
+            <p>{volume_ml:.6f}</p>
         </div>
         """, unsafe_allow_html=True)
 
