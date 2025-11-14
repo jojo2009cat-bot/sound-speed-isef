@@ -34,10 +34,9 @@ safe_limits_mg = {
 def calculate_moles_and_mass(v, metal_name):
     molar_mass = molar_masses[metal_name]  # g/mol
     try:
-        numerator = 2.2e6
+        numerator = 2.2e6  # 2.2*10^9 * 1e-3
         denominator = v**2
         n = (numerator / denominator - 1) / (molar_mass * 1e-3)
-        # إذا n < 0 فهذا خطأ، أما n = 0 طبيعي
         if n < 0:
             return None, None, "Error: Moles calculated as negative!"
         mass_mg = n * molar_mass * 1000  # mg
@@ -52,33 +51,34 @@ if v_input > 0:
         st.error(error)
     else:
         # --- تحديد حالة الأمان بناءً على الكتلة بالملليجرام ---
-        if mass_mg > safe_limits_mg[metal] + 1e-9:
+        if mass_mg > safe_limits_mg[metal] + 1e-12:  # هامش صغير لتجنب float rounding
             status_text = "Unsafe for human use"
             status_color = "#FF4C4C"  # أحمر
         else:
             status_text = "Safe for human use"
             status_color = "#90EE90"  # أخضر فاتح
 
-        # --- عرض النتائج ---
+        # --- عرض النتائج في 3 مربعات ---
         col1, col2, col3 = st.columns(3)
 
         col1.markdown(f"""
-        <div style='background-color:#ADD8E6; padding:15px; border-radius:10px; text-align:center;'>
+        <div style='background-color:#ADD8E6; padding:12px; border-radius:10px; text-align:center;'>
             <h5 style='font-size:16px;'>Moles (n)</h5>
             <p style='font-size:14px;'>{n:.6f}</p>
         </div>
         """, unsafe_allow_html=True)
 
         col2.markdown(f"""
-        <div style='background-color:#ADD8E6; padding:15px; border-radius:10px; text-align:center;'>
+        <div style='background-color:#ADD8E6; padding:12px; border-radius:10px; text-align:center;'>
             <h5 style='font-size:16px;'>Mass (mg)</h5>
             <p style='font-size:14px;'>{mass_mg:.6f}</p>
         </div>
         """, unsafe_allow_html=True)
 
         col3.markdown(f"""
-        <div style='background-color:{status_color}; padding:15px; border-radius:10px; text-align:center;'>
+        <div style='background-color:{status_color}; padding:12px; border-radius:10px; text-align:center;'>
             <h5 style='font-size:16px;'>Status</h5>
             <p style='font-size:14px;'>{status_text}</p>
         </div>
         """, unsafe_allow_html=True)
+
