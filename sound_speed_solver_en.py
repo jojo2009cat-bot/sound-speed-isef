@@ -1,5 +1,4 @@
 import streamlit as st
-import math
 
 # --- إعداد الصفحة ---
 st.set_page_config(page_title="Aguamenti Calculator for Heavy Metals", layout="centered")
@@ -60,13 +59,14 @@ metal = st.selectbox("", ["Lead (Pb)", "Cadmium (Cd)", "Mercury (Hg)"])
 st.markdown("**Enter the velocity of sound (m/s):**")
 velocity_input = st.text_input("", value="0.0")
 
-# --- تعريف بيانات المعادن ---
+# --- بيانات المعادن ---
 metal_data = {
     "Lead (Pb)": {"molar_mass": 207.2, "limit_mg": 0.01},
     "Cadmium (Cd)": {"molar_mass": 112.41, "limit_mg": 0.003},
     "Mercury (Hg)": {"molar_mass": 200.59, "limit_mg": 0.001}
 }
 
+# --- حساب النتائج ---
 try:
     v = float(velocity_input)
     if v <= 0:
@@ -75,11 +75,12 @@ try:
         M = metal_data[metal]["molar_mass"]
         limit = metal_data[metal]["limit_mg"]
 
-        # حساب عدد المولات
-        n = 2.2e6 / ((v**2 * 1) - 1) / M  # معادلة عكسية للـv
+        # حساب عدد المولات بالعكس من القانون
+        n = ((2.2e6 / (v**2)) - 1) / (M * 1e-3)
         if n < 0:
-            st.error("Error: calculated moles is negative")
+            st.error("Error: calculated number of moles is negative")
             n = 0
+
         # حساب الكتلة بالملليجرام
         mass_mg = n * M
         if mass_mg < 0:
