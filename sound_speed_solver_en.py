@@ -31,18 +31,18 @@ def calculate_mass(n, M):
 # Streamlit app
 st.set_page_config(page_title="Aguamenti Calculator for Heavy Metals", page_icon="🧪", layout="centered")
 
-# Custom CSS for soft colors between light yellow and blue
+# Custom CSS for dark sky blue background and soft colors
 st.markdown("""
 <style>
     body {
-        background-color: #f0f8ff;  /* Alice blue, soft blue */
-        color: #333;
+        background-color: #4682b4;  /* Steel blue, dark sky blue */
+        color: #fff;
     }
     .stApp {
-        background-color: #f0f8ff;
+        background-color: #4682b4;
     }
     .title {
-        color: #4682b4;  /* Steel blue */
+        color: #f0f8ff;  /* Light blue for contrast */
         font-size: 2.5em;
         text-align: center;
     }
@@ -59,6 +59,7 @@ st.markdown("""
         margin: 10px 0;
         text-align: center;
         font-weight: bold;
+        color: #000;
     }
     .safe {
         background-color: #90ee90;  /* Light green */
@@ -68,9 +69,9 @@ st.markdown("""
         background-color: #ff6347;  /* Tomato red */
         color: #8b0000;
     }
-    .professional-note {
+    .safety-note {
         font-size: 0.9em;
-        color: #555;
+        color: #f0f8ff;
         text-align: center;
         margin-top: 20px;
     }
@@ -118,10 +119,10 @@ if st.button("Calculate"):
         # Maximum threshold
         st.write(f"Maximum safe mass for {metal}: {threshold} mg/L")
 
-# Professional touches
+# Safety criteria note
 st.markdown("""
-<div class="professional-note">
-    <strong>Professional Note:</strong> This calculator is based on scientific principles for estimating heavy metal concentrations in water using acoustic properties. Results are approximations and should be verified with laboratory analysis for accurate environmental assessments. Developed for educational and research purposes.
+<div class="safety-note">
+    <strong>Safety Criteria:</strong> The thresholds used are based on Egyptian standards for drinking water quality. For Lead (Pb), the maximum allowable limit is 0.01 mg/L; for Cadmium (Cd), it is 0.003 mg/L; and for Mercury (Hg), it is 0.001 mg/L. Concentrations exceeding these limits are considered unsafe for human consumption.
 </div>
 """, unsafe_allow_html=True)
 
