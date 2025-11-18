@@ -78,7 +78,7 @@ st.markdown("""
 </style>
 """, unsafe_allow_html=True)
 
-st.markdown('<h1 class="title">Aguamenti Calculator for Heavy Metals</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="title">Aquamenti Calculator for Heavy Metals</h1>', unsafe_allow_html=True)
 st.markdown('<p class="subtitle">A calculator that gives you the amount of heavy metals in fresh water using the velocity of sound</p>', unsafe_allow_html=True)
 
 # Input section
@@ -125,5 +125,6 @@ st.markdown("""
     <strong>Safety Criteria:</strong> The thresholds used are based on Egyptian standards for drinking water quality. For Lead (Pb), the maximum allowable limit is 0.01 mg/L; for Cadmium (Cd), it is 0.003 mg/L; and for Mercury (Hg), it is 0.001 mg/L. Concentrations exceeding these limits are considered unsafe for human consumption.
 </div>
 """, unsafe_allow_html=True)
+
 
 
