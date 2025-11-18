@@ -29,7 +29,7 @@ def calculate_mass(n, M):
     return n * M * 1000 if n is not None else None
 
 # Streamlit app
-st.set_page_config(page_title="Aguamenti Calculator for Heavy Metals", page_icon="🧪", layout="centered")
+st.set_page_config(page_title="Aquamenti Calculator for Heavy Metals", page_icon="🧪", layout="centered")
 
 # Custom CSS for dark sky blue background and soft colors
 st.markdown("""
@@ -125,4 +125,5 @@ st.markdown("""
     <strong>Safety Criteria:</strong> The thresholds used are based on Egyptian standards for drinking water quality. For Lead (Pb), the maximum allowable limit is 0.01 mg/L; for Cadmium (Cd), it is 0.003 mg/L; and for Mercury (Hg), it is 0.001 mg/L. Concentrations exceeding these limits are considered unsafe for human consumption.
 </div>
 """, unsafe_allow_html=True)
+
 
